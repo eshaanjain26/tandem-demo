@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tandem: Agent Scheduling You Host</title>
+<meta name="description" content="Self-hosted scheduling. Each person's agent negotiates a meeting time inside a written mandate, and nobody gets an invite until both humans approve.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f5d50'/%3E%3Ctext x='16' y='22' font-family='sans-serif' font-size='18' font-weight='700' text-anchor='middle' fill='white'%3ET%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#"><span class="brand-mark" aria-hidden="true">T</span>Tandem</a>
+  <nav aria-label="Page sections">
+    <a href="#demo">Demo</a><a href="#features">Features</a><a href="#self-host">Self-host</a>
+  </nav>
+</div></header>
+
+<main>
+  <section class="hero wrap">
+    <p class="eyebrow">Open scheduling you run yourself · v1.0</p>
+    <h1>Your agent finds the time.<br>You both approve.</h1>
+    <p class="lede">Tandem is a self-hosted Calendly alternative. When two people both run Tandem, their agents trade candidate times under limits each owner wrote down. Neither agent can send an invitation. That takes both humans clicking approve.</p>
+    <div class="cta">
+      <a class="btn primary" href="#demo">Try the two-agent demo</a>
+      <a class="btn" href="#self-host">Run it on your server</a>
+    </div>
+  </section>
+
+  <section id="demo" class="wrap">
+    <div class="section-head">
+      <h2>Watch two agents negotiate</h2>
+      <p class="muted">Everything below runs in your browser with made-up calendars. Change either mandate and run it again. The rules mirror the server: every candidate time passes one validator, and every rejection gives a reason.</p>
+    </div>
+
+    <div class="people">
+      <form class="card person" id="alice" data-tz="America/Los_Angeles">
+        <div class="person-head"><span class="avatar a">A</span><div><strong>Alice Rivera</strong><div class="muted small">Los Angeles · alice@acme.example</div></div></div>
+        <fieldset>
+          <legend>Alice's mandate</legend>
+          <div class="days" data-field="days"></div>
+          <div class="grid2">
+            <label>Earliest <input type="time" name="earliest" value="08:00"></label>
+            <label>Latest <input type="time" name="latest" value="13:00"></label>
+            <label>Buffer (min) <input type="number" name="buffer" min="0" max="60" step="5" value="15"></label>
+            <label>Times per message <input type="number" name="reveal" min="1" max="6" value="3"></label>
+            <label>Prefers <select name="prefer"><option value="any">Any time</option><option value="morning" selected>Mornings</option><option value="afternoon">Afternoons</option></select></label>
+            <label>Max rounds <input type="number" name="rounds" min="1" max="6" value="4"></label>
+          </div>
+        </fieldset>
+      </form>
+
+      <form class="card person" id="bob" data-tz="America/New_York">
+        <div class="person-head"><span class="avatar b">B</span><div><strong>Bob Chen</strong><div class="muted small">New York · bob@globex.example</div></div></div>
+        <fieldset>
+          <legend>Bob's mandate</legend>
+          <div class="days" data-field="days"></div>
+          <div class="grid2">
+            <label>Earliest <input type="time" name="earliest" value="12:00"></label>
+            <label>Latest <input type="time" name="latest" value="17:00"></label>
+            <label>Buffer (min) <input type="number" name="buffer" min="0" max="60" step="5" value="15"></label>
+            <label>Times per message <input type="number" name="reveal" min="1" max="6" value="3"></label>
+            <label>Prefers <select name="prefer"><option value="any">Any time</option><option value="morning">Mornings</option><option value="afternoon" selected>Afternoons</option></select></label>
+            <label>Max rounds <input type="number" name="rounds" min="1" max="6" value="4"></label>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+
+    <div class="run-bar card">
+      <label>Meeting <select id="duration"><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>60 minutes</option></select></label>
+      <label class="check"><input type="checkbox" id="busy-week" checked> Busy week (more calendar conflicts)</label>
+      <button class="btn primary" id="run" type="button">Start negotiation</button>
+      <span class="muted small" id="run-status" role="status"></span>
+    </div>
+
+    <div class="result-grid">
+      <div class="card">
+        <h3>The week, in your time zone <span class="muted small" id="viewer-tz"></span></h3>
+        <div class="legend small">
+          <span><i class="sw work"></i>Working hours</span><span><i class="sw busy"></i>Busy</span>
+          <span><i class="sw offer"></i>Offered</span><span><i class="sw agreed"></i>Agreed</span>
+        </div>
+        <div id="week" class="week" aria-label="Both calendars for the week"></div>
+      </div>
+      <div class="card">
+        <h3>What the agents said</h3>
+        <ol id="timeline" class="timeline"><li class="muted">Press <strong>Start negotiation</strong>.</li></ol>
+        <div id="approve" class="approve" hidden>
+          <p><strong id="agreed-text"></strong></p>
+          <p class="muted small">The time is held on both calendars. No invitation exists yet.</p>
+          <div class="row">
+            <button class="btn" type="button" data-approve="alice">Approve as Alice</button>
+            <button class="btn" type="button" data-approve="bob">Approve as Bob</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="wrap">
+    <div class="section-head"><h2>What ships in 1.0</h2></div>
+    <div class="features">
+      <article class="card"><h3>Mandates with hard limits</h3><p>Allowed counterparties, days, hours, lengths, buffers, a daily cap, notice, look-ahead, round limit and how many times one message may reveal. Each version is hashed. No setting lets an agent skip approval.</p></article>
+      <article class="card"><h3>Signed agent protocol</h3><p>Ed25519 signatures with pinned peer keys, sequence numbers, nonces and timestamps. Export any negotiation as a signed log and check it offline with <code>tandem verify-export</code>.</p></article>
+      <article class="card"><h3>Booking links for everyone else</h3><p>Personal and team links with intake questions, your photo, bio and color, a guest time-zone picker and a 12/24-hour clock. Guests reschedule or cancel from a signed link.</p></article>
+      <article class="card"><h3>Teams</h3><p>Round robin gives each booking to the free member booked least recently. Collective links only offer times when everyone is free and invite all of them.</p></article>
+      <article class="card"><h3>Email that calendars understand</h3><p>Confirmations, reminders, reschedules and cancellations in each reader's time zone, with <code>.ics</code> invites that update the same event. Sending retries in the background.</p></article>
+      <article class="card"><h3>Embeds and webhooks</h3><p>One script tag puts a booking page on any site, inline or as a popup. HMAC-signed webhooks for created, moved, cancelled and agent-confirmed meetings, with retries and a delivery log.</p></article>
+      <article class="card"><h3>Google and Outlook</h3><p>Busy time from Google Calendar or Microsoft 365, including extra calendars you pick. Events are created on your calendar and the provider sends the invitations.</p></article>
+      <article class="card"><h3>Accounts you control</h3><p>Password sign-in with scrypt, invite-only sign-up by default, CSRF-checked sessions, API keys for scripts, rate limits, strict security headers and JSON logs.</p></article>
+      <article class="card"><h3>Optional Claude drafting</h3><p>Describe your rules in plain English and Claude drafts a mandate. You review the diff before anything changes. Without an API key the feature stays off.</p></article>
+    </div>
+  </section>
+
+  <section id="self-host" class="wrap">
+    <div class="section-head">
+      <h2>Run it yourself</h2>
+      <p class="muted">One container and one SQLite file. Free to run on any small VM or home server.</p>
+    </div>
+    <div class="card stack">
+      <pre><code>docker run -d --name tandem --restart unless-stopped -p 8700:8700 \
+  -v tandem-data:/data \
+  -e TANDEM_BASE_URL=https://cal.example.com \
+  -e TANDEM_INSTANCE_ID=cal.example.com \
+  ghcr.io/eshaanjain26/tandem:1.0.0</code></pre>
+      <ol class="steps">
+        <li>Put it behind a TLS proxy. With Caddy that's two lines: <code>cal.example.com { reverse_proxy 127.0.0.1:8700 }</code>.</li>
+        <li>Open <code>/dashboard</code>. The first account becomes the admin; invite the rest of your team from <strong>Account</strong>.</li>
+        <li>Set <code>TANDEM_CALENDAR=google</code> or <code>microsoft</code> and the OAuth client values, plus <code>SMTP_*</code> for email.</li>
+        <li>Back up with <code>docker exec tandem tandem backup /data/backup.db</code>. Upgrades migrate the database on start.</li>
+      </ol>
+      <p class="muted small">Images are built for amd64 and arm64, so a Raspberry Pi works too.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap muted small">
+  <p>Tandem is MIT licensed. This page is a static demo hosted on GitHub Pages; it sends nothing anywhere.</p>
+</footer>
+<script src="demo.js"></script>
+</body>
+</html>
