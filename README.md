@@ -6,6 +6,6 @@ The public landing page and in-browser demo for [Tandem](https://eshaanjain26.gi
 - The demo runs entirely in the browser with generated calendars. It reproduces the server's rules: one validator for every candidate time, a reason for every rejection, round and reveal limits from each mandate, and an invitation only after both approvals.
 - `.github/workflows/pages.yml` deploys `main` to GitHub Pages.
 
-Run Tandem itself from the container image: `ghcr.io/eshaanjain26/tandem:1.0.0`.
+Run Tandem itself from the container image: `ghcr.io/eshaanjain26/tandem:1.1.0`.
 
 Preview locally with `python3 -m http.server` in this folder.

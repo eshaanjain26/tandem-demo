@@ -18,7 +18,7 @@
 
 <main>
   <section class="hero wrap">
-    <p class="eyebrow">Open scheduling you run yourself · v1.0</p>
+    <p class="eyebrow">Open scheduling you run yourself · v1.1</p>
     <h1>Your agent finds the time.<br>You both approve.</h1>
     <p class="lede">Tandem is a self-hosted Calendly alternative. When two people both run Tandem, their agents trade candidate times under limits each owner wrote down. Neither agent can send an invitation. That takes both humans clicking approve.</p>
     <div class="cta">
@@ -99,7 +99,7 @@
   </section>
 
   <section id="features" class="wrap">
-    <div class="section-head"><h2>What ships in 1.0</h2></div>
+    <div class="section-head"><h2>What ships in 1.1</h2></div>
     <div class="features">
       <article class="card"><h3>Mandates with hard limits</h3><p>Allowed counterparties, days, hours, lengths, buffers, a daily cap, notice, look-ahead, round limit and how many times one message may reveal. Each version is hashed. No setting lets an agent skip approval.</p></article>
       <article class="card"><h3>Signed agent protocol</h3><p>Ed25519 signatures with pinned peer keys, sequence numbers, nonces and timestamps. Export any negotiation as a signed log and check it offline with <code>tandem verify-export</code>.</p></article>
@@ -109,6 +109,9 @@
       <article class="card"><h3>Embeds and webhooks</h3><p>One script tag puts a booking page on any site, inline or as a popup. HMAC-signed webhooks for created, moved, cancelled and agent-confirmed meetings, with retries and a delivery log.</p></article>
       <article class="card"><h3>Google and Outlook</h3><p>Busy time from Google Calendar or Microsoft 365, including extra calendars you pick. Events are created on your calendar and the provider sends the invitations.</p></article>
       <article class="card"><h3>Accounts you control</h3><p>Password sign-in with scrypt, invite-only sign-up by default, CSRF-checked sessions, API keys for scripts, rate limits, strict security headers and JSON logs.</p></article>
+      <article class="card"><h3>Admin console</h3><p>See everyone on your instance, disable or remove accounts, promote admins, check queues and backups, and send a test email to prove SMTP works.</p></article>
+      <article class="card"><h3>Your data, your call</h3><p>Anyone can download everything stored about them as JSON or delete their account. Upcoming meetings are cancelled with notice, and live negotiations are withdrawn so the other agent knows.</p></article>
+      <article class="card"><h3>Runs itself</h3><p>Daily backups with retention, Prometheus metrics, and an email when your calendar connection breaks or a webhook keeps failing. Images ship with an SBOM and build provenance.</p></article>
       <article class="card"><h3>Optional Claude drafting</h3><p>Describe your rules in plain English and Claude drafts a mandate. You review the diff before anything changes. Without an API key the feature stays off.</p></article>
     </div>
   </section>
@@ -123,12 +126,12 @@
   -v tandem-data:/data \
   -e TANDEM_BASE_URL=https://cal.example.com \
   -e TANDEM_INSTANCE_ID=cal.example.com \
-  ghcr.io/eshaanjain26/tandem:1.0.0</code></pre>
+  ghcr.io/eshaanjain26/tandem:1.1.0</code></pre>
       <ol class="steps">
         <li>Put it behind a TLS proxy. With Caddy that's two lines: <code>cal.example.com { reverse_proxy 127.0.0.1:8700 }</code>.</li>
         <li>Open <code>/dashboard</code>. The first account becomes the admin; invite the rest of your team from <strong>Account</strong>.</li>
         <li>Set <code>TANDEM_CALENDAR=google</code> or <code>microsoft</code> and the OAuth client values, plus <code>SMTP_*</code> for email.</li>
-        <li>Back up with <code>docker exec tandem tandem backup /data/backup.db</code>. Upgrades migrate the database on start.</li>
+        <li>Backups run daily into <code>/data/backups</code>; mount another volume there and copy them off the machine. Upgrades migrate the database on start.</li>
       </ol>
       <p class="muted small">Images are built for amd64 and arm64, so a Raspberry Pi works too.</p>
     </div>
